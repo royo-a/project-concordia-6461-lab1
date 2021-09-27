@@ -1,0 +1,27 @@
+{
+  "name": "project-concordia-6461-lab1",
+  "version": "1.0.0",
+  "description": "In this project, I implemented a library containing the HTTP GET and POST methods using Node.js. Later, I developed a cURL like command-line application which uses the library to process GET and POST requests. Some of the features of the client app are:   - Fetch data using GET   - Post input data to server with POST   - Post data from a file to server with POST   - verbose option   - help option",
+  "main": "http-library.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/royo-a/project-concordia-6461-lab1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/royo-a/project-concordia-6461-lab1/issues"
+  },
+  "homepage": "https://github.com/royo-a/project-concordia-6461-lab1#readme",
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true
+  },
+  "type": "module"
+}
