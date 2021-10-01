@@ -76,7 +76,6 @@ const httpGET = (url, headers = []) => {
 const httpPOST = (url, uploadData, headers) => {
   // Parse the url into host, port and path.
   let { host, port, path } = parseURL(url);
-  console.log(host, port, path);
 
   // Prepare the POST request string
   let request = `POST /${path} HTTP/1.0\r\n` + 
@@ -87,8 +86,6 @@ const httpPOST = (url, uploadData, headers) => {
   });
   request += '\r\n';
   request += uploadData;
-
-  console.log(request);
 
   // Create connection with host. A socket is returned.
   let socket = net.createConnection(port, host);
@@ -134,13 +131,13 @@ const httpPOST = (url, uploadData, headers) => {
 //     console.log(error);
 //   });
 
-httpPOST('http://httpbin.org/post', '{"name":"John"}', [
-  'Host: httpbin.org',
-  'Content-Type: application/json'
-])
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+// httpPOST('http://httpbin.org/post', '{"name":"John"}', [
+//   'Host: httpbin.org',
+//   'Content-Type: application/json'
+// ])
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
