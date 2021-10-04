@@ -78,8 +78,8 @@ const httpPOST = (url, uploadData, headers) => {
   let { host, port, path } = parseURL(url);
 
   // Prepare the POST request string
-  let request = `POST /${path} HTTP/1.0\r\n` + 
-                `Content-Length: ${uploadData.length}\r\n`;
+  let request =
+    `POST /${path} HTTP/1.0\r\n` + `Content-Length: ${uploadData.length}\r\n`;
   // Add the headers to request string
   headers.forEach((header) => {
     request += header + '\r\n';
@@ -141,3 +141,5 @@ const httpPOST = (url, uploadData, headers) => {
 //   .catch((error) => {
 //     console.log(error);
 //   });
+
+export { httpGET, httpPOST };
