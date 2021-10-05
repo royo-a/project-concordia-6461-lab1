@@ -6,7 +6,7 @@ import { httpGET, httpPOST } from './http-library.js';
 const httpcGetRegex =
   /httpc get( -v)?( -h [a-z-]+:[a-z-]+)* http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcPostRegex =
-  /httpc post( -v)?( -h [a-z-]+:[^\s]+)* ((-d '.+')|(-f .+\.txt)) http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
+  /httpc post( -v)?( -h [a-z-]+:[^\s]+)* ((-d [^\s]+)|(-f .+\.txt)) http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcHelpRegex = /httpc help( (get|post))?/gi;
 
 // Custom event which triggers when all data is received and processed from the server.
@@ -66,7 +66,6 @@ rl.on('line', (line) => {
     url: null,
   };
 
-  // TODO: test this part
   // Extract request parameters (verbose, headers, data, url and filename)
   inputParts.url = arrayOfSplitInput[arrayOfSplitInput.length - 1];
   for (let i = 2; i < arrayOfSplitInput.length - 1; i++) {
@@ -81,7 +80,6 @@ rl.on('line', (line) => {
     }
   }
 
-  // TODO: If input is for 'help', output text for 'help'.
   // Else if, input is for GET, send a GET request.
   // Else send a POST request.
   if (arrayOfSplitInput[1].toLowerCase() === 'help') {
@@ -109,8 +107,8 @@ rl.on('line', (line) => {
       );
     } else {
       console.log(
-        'Usage:\n' + 
-         '\thttpc post [-v] [-h key:value] [-d inline-data] [-f file] URL\n' +
+        'Usage:\n' +
+          '\thttpc post [-v] [-h key:value] [-d inline-data] [-f file] URL\n' +
           'Post executes a HTTP POST request for a given URL with inline data or from file.\n' +
           '\t-v             Prints the detail of the response such as protocol, status, and headers.\n' +
           '\t-h key:value   Associates headers to HTTP Request with the format key:value.\n' +
@@ -122,24 +120,46 @@ rl.on('line', (line) => {
 
     rl.prompt();
   } else if (arrayOfSplitInput[1].toLowerCase() === 'get') {
+    // httpc -v get url
+    httpGET(inputParts.url, inputParts.headers)
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => console.log(error))
+      .finally(() => {
+        rl.prompt();
+      });
   } else {
-    // If filename is mentioned, import data from file.
-    if (inputParts.fileName) {
-      const fileReadLine = createInterface({
-        input: fs.createReadStream(inputParts.fileName),
-        crlfDelay: Infinity,
-      });
+    /* The data for post request can be achieved if it's already in the request or 
+       if from a file if the name is mentioned in the input. Whenever the data is ready, we
+       send the post request. */
+    new Promise((resolve) => {
+      // TODO: test uploading a file.
+      // If filename is mentioned, import data from file.
+      if (inputParts.fileName) {
+        const fileReadLine = createInterface({
+          input: fs.createReadStream(inputParts.fileName),
+          crlfDelay: Infinity,
+        });
 
-      fileReadLine.on('line', (line) => {
-        inputParts.data += line;
-      });
+        fileReadLine.on('line', (line) => {
+          console.log(line);
+          inputParts.data += line;
+        });
 
-      fileReadLine.on('close', () => {
-        eventEmitter.emit('dataProcessed', inputParts);
-      });
-    } else {
-      eventEmitter.emit('dataProcessed', inputParts);
-    }
+        fileReadLine.on('close', () => {
+          resolve(inputParts.data);
+        });
+      } else {
+        // Strip the single quotation mark from user input (')
+        resolve(inputParts.data.replace(/'/g, ''));
+      }
+    }).then((data)=>{ 
+        return httpPOST(inputParts.url, data, inputParts.headers);
+    })
+    .then(response => {console.log(response);})
+    .catch((error)=>{ console.log(error); })
+    .finally(()=>{ rl.prompt() });
   }
 });
 
