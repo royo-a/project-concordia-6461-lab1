@@ -6,24 +6,8 @@ import { httpGET, httpPOST } from './http-library.js';
 const httpcGetRegex =
   /httpc get( -v)?( -h [a-z-]+:[a-z-]+)* http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcPostRegex =
-  /httpc post( -v)?( -h [a-z-]+:[^\s]+)* ((-d [^\s]+)|(-f .+\.txt)) http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
+  /httpc post( -v)?( -h [a-z-]+:[^\s]+)* ((-d '(([A-Z0-9!@#$%^&*()_+-=:;'"?/><.,`~\s]+)|({("[A-Z]+":(("[A-Z][^\s]+")|([0-9]+)),?)+}))')|(-f .+\.txt)) http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcHelpRegex = /httpc help( (get|post))?/gi;
-
-// Custom event which triggers when all data is received and processed from the server.
-const eventEmitter = new EventEmitter();
-eventEmitter.on('dataProcessed', (requestParameters) => {
-  httpPOST(
-    requestParameters.url,
-    requestParameters.data,
-    requestParameters.headers
-  )
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
 
 /**
  * Checks if user input follows correct syntax.
@@ -38,6 +22,16 @@ const ifStructureOk = (input) => {
     input.match(httpcHelpRegex);
 
   return matchedString ? matchedString[0].length === input.length : false;
+};
+
+const printResponse = (response, ifVerbose) => {
+  let splitResponse;
+  if (!ifVerbose) {
+    splitResponse = response.split(/\r\n\r\n/g);
+    console.log(splitResponse[1]);
+  } else {
+    console.log(response);
+  }
 };
 
 let rl = createInterface({
@@ -80,6 +74,7 @@ rl.on('line', (line) => {
     }
   }
 
+  // If input is for help, send a help request.
   // Else if, input is for GET, send a GET request.
   // Else send a POST request.
   if (arrayOfSplitInput[1].toLowerCase() === 'help') {
@@ -122,8 +117,8 @@ rl.on('line', (line) => {
   } else if (arrayOfSplitInput[1].toLowerCase() === 'get') {
     // httpc -v get url
     httpGET(inputParts.url, inputParts.headers)
-      .then((data) => {
-        console.log(data);
+      .then((response) => {
+        printResponse(response, inputParts.isVerbose);
       })
       .catch((error) => console.log(error))
       .finally(() => {
@@ -134,7 +129,6 @@ rl.on('line', (line) => {
        if from a file if the name is mentioned in the input. Whenever the data is ready, we
        send the post request. */
     new Promise((resolve) => {
-      // TODO: test uploading a file.
       // If filename is mentioned, import data from file.
       if (inputParts.fileName) {
         const fileReadLine = createInterface({
@@ -151,15 +145,23 @@ rl.on('line', (line) => {
           resolve(inputParts.data);
         });
       } else {
-        // Strip the single quotation mark from user input (')
+        // Strip the quotation marks from user input ('')
         resolve(inputParts.data.replace(/'/g, ''));
       }
-    }).then((data)=>{ 
-        return httpPOST(inputParts.url, data, inputParts.headers);
     })
-    .then(response => {console.log(response);})
-    .catch((error)=>{ console.log(error); })
-    .finally(()=>{ rl.prompt() });
+      .then((data) => {
+        // When the data for sending is ready, send the post request
+        return httpPOST(inputParts.url, data, inputParts.headers);
+      })
+      .then((response) => {
+        printResponse(response, inputParts.isVerbose);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        rl.prompt();
+      });
   }
 });
 
