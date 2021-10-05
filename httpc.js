@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { httpGET, httpPOST } from './http-library.js';
 
 const httpcGetRegex =
-  /httpc get( -v)?( -h [a-z-]+:[a-z-]+)* http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
+  /httpc get( -v)?( -h [a-z-]+:[^\s]+)* http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcPostRegex =
   /httpc post( -v)?( -h [a-z-]+:[^\s]+)* ((-d '(([A-Z0-9!@#$%^&*()_+-=:;'"?/><.,`~\s]+)|({("[A-Z]+":(("[A-Z][^\s]+")|([0-9]+)),?)+}))')|(-f .+\.txt)) http:\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/gi;
 const httpcHelpRegex = /httpc help( (get|post))?/gi;
