@@ -7,3 +7,5 @@ In this project, I implemented a library which contains functions to send HTTP G
   - Post data from a file to server with POST
   - verbose option
   - help option
+
+Here's a video showing how it works: https://drive.google.com/file/d/1ykh68pjMZHTSpkbCKq2gCxwlItygxgP1/view?usp=sharing
