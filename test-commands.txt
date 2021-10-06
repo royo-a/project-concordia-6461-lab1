@@ -1,0 +1,12 @@
+
+1. httpc help
+2. httpc help get
+3. httpc help post
+
+1. httpc get http://httpbin.org/get?course=networking&assignment=1
+2. httpc get -v http://httpbin.org/get?course=networking&assignment=1
+3. httpc get http://httpbin.org/get
+
+1. httpc post -h Content-Type:application/json -d '{"Assignment":1}' http://httpbin.org/post
+2. httpc post -v -h Content-Type:application/json -d '{"Assignment":1}' http://httpbin.org/post
+3. httpc post -v -h Content-Type:application/json -f file.txt http://httpbin.org/post
