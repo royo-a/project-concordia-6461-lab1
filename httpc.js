@@ -68,7 +68,17 @@ rl.on('line', (line) => {
     } else if (arrayOfSplitInput[i].toLowerCase() === '-v') {
       inputParts.isVerbose = true;
     } else if (arrayOfSplitInput[i].toLowerCase() === '-d') {
-      inputParts.data = arrayOfSplitInput[i + 1];
+      /* Data might be split if they contain spaces. 
+         We append them back here. */
+      for (
+        let appendIndex = i + 1;
+        appendIndex < arrayOfSplitInput.length - 1;
+        appendIndex++
+      ) {
+        inputParts.data += arrayOfSplitInput[appendIndex];
+        if (appendIndex + 1 < arrayOfSplitInput.length - 1)
+          inputParts.data += ' ';
+      }
     } else if (arrayOfSplitInput[i].toLowerCase() === '-f') {
       inputParts.fileName = arrayOfSplitInput[i + 1];
     }
