@@ -147,7 +147,6 @@ rl.on('line', (line) => {
         });
 
         fileReadLine.on('line', (line) => {
-          console.log(line);
           inputParts.data += line;
         });
 
