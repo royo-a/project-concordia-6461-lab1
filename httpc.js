@@ -1,6 +1,5 @@
 import { createInterface } from 'readline';
 import * as fs from 'fs';
-import { EventEmitter } from 'events';
 import { httpGET, httpPOST } from './http-library.js';
 
 const httpcGetRegex =

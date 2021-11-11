@@ -1,4 +1,5 @@
 import * as net from 'net';
+import { parse } from 'path';
 
 const parseURL = (url) => {
   let urlParts = {};
@@ -6,7 +7,14 @@ const parseURL = (url) => {
   // First strip the 'http://' from the url
   url = url.replace(/http:\/\//gi, '');
   // Separate the host, port and the path
-  let [hostWithPort, path] = url.split('/');
+  // TODO: test this part
+  let indexOfSlash = url.search(/\//);
+  indexOfSlash = indexOfSlash === -1 ? url.length : indexOfSlash;
+  let [hostWithPort, path] = [
+    url.slice(0, indexOfSlash),
+    url.slice(indexOfSlash + 1),
+  ];
+
   let [host, port] = hostWithPort.split(':');
   urlParts.host = host;
   urlParts.port = port ? Number.parseInt(port) : 80;
@@ -48,7 +56,7 @@ const httpGET = (url, headers = []) => {
   });
 
   // If socket remains idle for 3s, trigger a timeout event.
-  socket.setTimeout(3000);
+  socket.setTimeout(5000);
 
   // Close the connection by terminating the socket.
   socket.on('timeout', () => {
